@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/pj/omnia-contractsV2/contracts/Diamond.sol": {
-      "lastModificationDate": 1681113869865,
-      "contentHash": "794cc4c589bf410f4a24e8cf2548c01c",
+      "lastModificationDate": 1681362832302,
+      "contentHash": "29866d3df07068673c074827207d5e12",
       "sourceName": "contracts/Diamond.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -2437,8 +2437,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/VaultManager.sol": {
-      "lastModificationDate": 1681355986139,
-      "contentHash": "0d69bf674a8ac94944b93bfd8bf2f4d4",
+      "lastModificationDate": 1681363783622,
+      "contentHash": "230102b3f04fd64f3bdbc344aa3ac07e",
       "sourceName": "contracts/VaultManager.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -2659,8 +2659,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/facets/LoanFacet.sol": {
-      "lastModificationDate": 1681104537457,
-      "contentHash": "31cd46ca646002fb6fe706b8e82f5d03",
+      "lastModificationDate": 1681363010322,
+      "contentHash": "9412fb1890b4e77271ada6850c998095",
       "sourceName": "contracts/facets/LoanFacet.sol",
       "solcConfig": {
         "version": "0.8.17",

@@ -18,7 +18,11 @@ contract VaultManager {
     address[] public vaults;
     mapping(address => bool) public validVault;
 
-    event FunctionSelector(bytes4 indexed functionSelector, address indexed _LOAN_FACET_ADDRESS);
+    event FunctionSelector(
+        bytes4 indexed functionSelector,
+        address indexed _LOAN_FACET_ADDRESS,
+        address indexed _NEW_VAULT
+    );
 
     constructor(address _VAULT, address _ORACLE, address _ADMIN) {
         VAULT = _VAULT;
@@ -53,15 +57,11 @@ contract VaultManager {
                 functionSelectors: functionSelectors
             });
 
-            // -> kun contract le call gareko le farak parla ki..
-            // LibDiamond.diamondCut(cut, address(0), "");
+            emit FunctionSelector(functionSelector, _LOAN_FACET_ADDRESS, vault);
             IDiamondCut(vault).diamondCut(cut, address(0), "");
 
-            //-> we need to check here-if the diamond was cut properly or not.
-            emit FunctionSelector(functionSelector, _LOAN_FACET_ADDRESS);
-
             IVault(vault).initialize(_VAULT_DETAILS, _WHITELISTED_ASSETS, _WHITELISTED_DETAILS);
-            // vaults.push(address(vault));
+            vaults.push(address(vault));
         }
     }
 

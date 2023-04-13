@@ -31,6 +31,15 @@ contract Diamond {
         LibDiamond.diamondCut(cut, address(0), "");
     }
 
+    //ok- i am adding a function for test.. But only owners should be allowed to use this function.. or it shouldn't be exposed like this in production.
+    function diamondCut(
+        IDiamondCut.FacetCut[] memory _cut,
+        address _init,
+        bytes memory _calldata
+    ) external {
+        LibDiamond.diamondCut(_cut, _init, _calldata);
+    }
+
     // Find facet for function that is called and execute the
     // function if a facet is found and return any value.
     fallback() external payable {

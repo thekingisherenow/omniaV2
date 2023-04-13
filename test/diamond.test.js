@@ -190,21 +190,24 @@ describe("diamond", async function () {
         console.log("loanfacetAddress", loanFacetAddress)
         //     await diamondLoupeFacet.facetAddress(/*selector ko address chaiyo.*/)
 
-        response = await vm.createVault(
+        const createVaultResponse = await vm.createVault(
             _VAULT_DETAILS,
             _WHITELISTED_ASSETS,
             _WHITELISTED_DETAILS,
             diamondAddress,
             loanFacetAddress
         )
-        receipt = await response.wait(1)
-        //listen for the event
-        const value = receipt.events[0].args
-        console.log("value: " + value)
-        console.log("Vault created")
+        receipt = await createVaultResponse.wait(1)
 
-        // // get the pairs.
-        // console.log("The pairs :", pairs.USDC.address)
+        //listen for the event--
+        //lets find the value of the new vault.
+        // const value = await receipt
+        console.log("receipt: " + receipt)
+        console.log("Vault created")
+        response = await vm.getVaults()
+        console.log("getVaults: " + response)
+        // get the pairs.
+        console.log("The pairs :", pairs.USDC.address)
 
         // response = await loanFacet.getUSDValue(pairs.USDC.address, "200")
         // console.log(response)
