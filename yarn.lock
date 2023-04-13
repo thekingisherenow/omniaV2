@@ -979,6 +979,11 @@
   dependencies:
     antlr4ts "^0.5.0-alpha.4"
 
+"@solidstate/contracts@^0.0.54":
+  version "0.0.54"
+  resolved "https://registry.yarnpkg.com/@solidstate/contracts/-/contracts-0.0.54.tgz#6f6a7b5e707e0e6f511a482cba5476f2d0c2d37c"
+  integrity sha512-vm49jVopBPuoLmjTiJxdT1L1eJzWJE3JMODtd5+wpo8Fa6XIrEqcqNt2BnCv2SvnQp6I4R+TzhJPh1riWWQsiQ==
+
 "@trufflesuite/bigint-buffer@1.1.10":
   version "1.1.10"
   resolved "https://registry.yarnpkg.com/@trufflesuite/bigint-buffer/-/bigint-buffer-1.1.10.tgz#a1d9ca22d3cad1a138b78baaf15543637a3e1692"

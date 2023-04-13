@@ -20,7 +20,7 @@ contract Vault is ERC1155, ReentrancyGuard {
 
     // uint32 private constant LIQUIDITY_POSITION = 0;
     uint256 public _nextId = 1;
-    uint256 public totalSupply = 0;
+    uint256 public totalSupply;
 
     // event LiquidityAdded(address asset, uint256 amount, uint256 shares, address _lp);
     // event LiquidtyRemoved(address asset, uint256 amount, uint256 shares, address _lp);
@@ -35,7 +35,7 @@ contract Vault is ERC1155, ReentrancyGuard {
         WHITELISTED_ASSETS = _WHITELISTED_ASSETS;
 
         uint length = _WHITELISTED_ASSETS.length;
-        uint32 max_exposure = 0;
+        uint32 max_exposure;
         for (uint i = 0; i < _WHITELISTED_ASSETS.length; i++) {
             WHITELISTED_DETAILS[_WHITELISTED_DETAILS[i].collection] = _WHITELISTED_DETAILS[i];
             idx[_WHITELISTED_DETAILS[i].collection] = i;
@@ -55,7 +55,7 @@ contract Vault is ERC1155, ReentrancyGuard {
     function getUSDBalanceAndDelta() public view returns (uint256, Delta[] memory deltas) {
         Delta[] memory deltas = new Delta[](WHITELISTED_ASSETS.length);
 
-        uint256 usd_balance = 0;
+        uint256 usd_balance;
 
         for (uint i = 0; i < WHITELISTED_ASSETS.length; i++) {
             //first check basic balance

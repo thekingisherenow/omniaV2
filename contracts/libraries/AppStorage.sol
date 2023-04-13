@@ -1,4 +1,5 @@
-pragma solidity ^0.8.9;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
 
 struct GMXPosition {
     uint256 size;
@@ -46,4 +47,24 @@ struct Loan {
     uint256 principal;
     uint256 repayment;
     uint256 lockedAmount;
+}
+
+struct AppStorage {
+    VaultDetails VAULT_DETAILS;
+    address[] WHITELISTED_ASSETS;
+    address MAIN_ASSET;
+    mapping(address => Whitelisted) WHITELISTED_DETAILS;
+    mapping(uint256 => Loan) _loans;
+    mapping(address => uint256) idx;
+    // uint32  constant LIQUIDITY_POSITION = 0;
+    uint256 _nextId;
+    uint256 totalSupply;
+}
+
+library LibStorage {
+    function appStorage() internal pure returns (AppStorage storage ds) {
+        assembly {
+            ds.slot := 0
+        }
+    }
 }

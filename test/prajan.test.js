@@ -10,19 +10,9 @@ describe("prajan", function () {
         console.log("deployer", deployer)
         or = await ethers.getContract("Oracle", deployer)
         console.log("or", or.address)
-        // [
-        //     //how to get the address deployed ??
-        //     /*pairs,*/ (addresses, or, vb, vm)
-        // ] = await deployContracts((testnet = true), (receivers = [owner.address]))
-        // //yo vm ra Vault ko difference figure out garnu cha..
-        // let vaults = await vm.getVaults()
-        // const Vault = await ethers.getContractFactory("Vault")
-        // vault = await Vault.attach(vaults[0])
-
-        // player1ConnectedEthcContract = pairs.WETH.connect(player1)
     })
-    it.only("just for testing before", async () => {
-        //
+    it("just for testing before", async () => {
+        console.log("yoo")
     })
 
     // check Balanced takes a asset address and check-how much of value it will hold in the vault. if the value is higher than 5 %, it reverts the whole process of transfer or swap.
