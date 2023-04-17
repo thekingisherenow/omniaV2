@@ -60,11 +60,3 @@ struct AppStorage {
     uint256 _nextId;
     uint256 totalSupply;
 }
-
-library LibStorage {
-    function appStorage() internal pure returns (AppStorage storage ds) {
-        assembly {
-            ds.slot := 0
-        }
-    }
-}

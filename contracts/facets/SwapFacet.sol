@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {LibSwap} from "../libraries/LibSwap.sol";
-import {LibStorage, AppStorage} from "../libraries/AppStorage.sol";
+import {AppStorage} from "../libraries/AppStorage.sol";
 
 contract SwapFacet {
     AppStorage internal s;

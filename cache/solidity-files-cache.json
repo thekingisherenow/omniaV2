@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/pj/omnia-contractsV2/contracts/Diamond.sol": {
-      "lastModificationDate": 1681362832302,
-      "contentHash": "29866d3df07068673c074827207d5e12",
+      "lastModificationDate": 1681364830412,
+      "contentHash": "025b5eafb781ee2f51c0365d171d5166",
       "sourceName": "contracts/Diamond.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -92,8 +92,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/libraries/AppStorage.sol": {
-      "lastModificationDate": 1681062134245,
-      "contentHash": "2f48589abbddaf9733bb71dc9f59706f",
+      "lastModificationDate": 1681728794977,
+      "contentHash": "2dfaa8f0727572c48f7ba7aabd8c5049",
       "sourceName": "contracts/libraries/AppStorage.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -129,9 +129,7 @@
       "versionPragmas": [
         "^0.8.0"
       ],
-      "artifacts": [
-        "LibStorage"
-      ]
+      "artifacts": []
     },
     "/home/pj/omnia-contractsV2/contracts/interfaces/IDiamondCut.sol": {
       "lastModificationDate": 1680689100866,
@@ -176,8 +174,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/upgradeInitializers/DiamondInit.sol": {
-      "lastModificationDate": 1681114015835,
-      "contentHash": "a721ceb583ffa12ad799996378bcf846",
+      "lastModificationDate": 1681712686417,
+      "contentHash": "2fa99a2321f800ea24d51234a04509d7",
       "sourceName": "contracts/upgradeInitializers/DiamondInit.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -214,7 +212,8 @@
         "../interfaces/IDiamondLoupe.sol",
         "../interfaces/IDiamondCut.sol",
         "../interfaces/IERC173.sol",
-        "../interfaces/IERC165.sol"
+        "../interfaces/IERC165.sol",
+        "../libraries/AppStorage.sol"
       ],
       "versionPragmas": [
         "^0.8.0"
@@ -486,8 +485,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/libraries/LibSwap.sol": {
-      "lastModificationDate": 1681062235715,
-      "contentHash": "bd4e8196f1d10595e8178b3285b644ad",
+      "lastModificationDate": 1681729031367,
+      "contentHash": "882407a4443dedf34eb0436a2a00daf3",
       "sourceName": "contracts/libraries/LibSwap.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -1913,8 +1912,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/libraries/LibLoan.sol": {
-      "lastModificationDate": 1681104465947,
-      "contentHash": "648c38ecdfb6549f90f169ffae9ebbf9",
+      "lastModificationDate": 1681733783267,
+      "contentHash": "ed4b4a34894ef6251d74ed8232ed776e",
       "sourceName": "contracts/libraries/LibLoan.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -2437,8 +2436,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/VaultManager.sol": {
-      "lastModificationDate": 1681363783622,
-      "contentHash": "230102b3f04fd64f3bdbc344aa3ac07e",
+      "lastModificationDate": 1681719134547,
+      "contentHash": "828696899174a3388741dd47d0831bd9",
       "sourceName": "contracts/VaultManager.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -2659,7 +2658,7 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/facets/LoanFacet.sol": {
-      "lastModificationDate": 1681363010322,
+      "lastModificationDate": 1681733119787,
       "contentHash": "9412fb1890b4e77271ada6850c998095",
       "sourceName": "contracts/facets/LoanFacet.sol",
       "solcConfig": {
@@ -2704,8 +2703,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/facets/SwapFacet.sol": {
-      "lastModificationDate": 1681091406332,
-      "contentHash": "c84066d154c1a07936f66f0bc5b9b160",
+      "lastModificationDate": 1681729065487,
+      "contentHash": "f59c3347c99c0357440cbe68ded5f75d",
       "sourceName": "contracts/facets/SwapFacet.sol",
       "solcConfig": {
         "version": "0.8.17",
@@ -2835,8 +2834,8 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/interfaces/ILoan.sol": {
-      "lastModificationDate": 1681284287242,
-      "contentHash": "481d9614d79f8a63bdd115f07fdb6bd1",
+      "lastModificationDate": 1681718958617,
+      "contentHash": "d24ace7b613a2e4d7a593e811aca1cce",
       "sourceName": "contracts/interfaces/ILoan.sol",
       "solcConfig": {
         "version": "0.8.17",

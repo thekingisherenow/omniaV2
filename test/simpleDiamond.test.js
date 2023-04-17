@@ -11,7 +11,7 @@ const { pairs } = require("../helper-hardhat-config.js")
 const { assert } = require("chai")
 const { ethers, getNamedAccounts } = require("hardhat")
 
-describe("diamond", async function () {
+describe("Simple Diamond Tests.", async function () {
     let diamondAddress
     let diamondCutFacet
     let diamondLoupeFacet
@@ -21,6 +21,7 @@ describe("diamond", async function () {
     let result
     let deployer
     const addresses = []
+    let or, vm, gmx
 
     before(async function () {
         console.log("yo")
@@ -33,9 +34,23 @@ describe("diamond", async function () {
         diamondCutFacet = await ethers.getContractAt("DiamondCutFacet", diamondAddress)
         diamondLoupeFacet = await ethers.getContractAt("DiamondLoupeFacet", diamondAddress)
         ownershipFacet = await ethers.getContractAt("OwnershipFacet", diamondAddress)
-    })
-    it("checking..", async () => {
-        console.log("hii")
+        //deploy oracle
+        const Oracle = await ethers.getContractFactory("Oracle")
+        or = await Oracle.deploy(deployer)
+        await or.deployed()
+        console.log("Oracle Contract Deployed at " + or.address)
+
+        //deploy VaultManager. args- oracle-vault-admin
+        const VaultManager = await ethers.getContractFactory("VaultManager")
+        vm = await VaultManager.deploy(diamondAddress, or.address, deployer)
+        await vm.deployed()
+        console.log("Vault Manager Contract Deployed at " + vm.address)
+
+        //deploy GMX contract
+        const GMX = await ethers.getContractFactory("GMX")
+        gmx = await GMX.deploy(or.address)
+        await gmx.deployed()
+        console.log("GMX Contract Deployed at " + gmx.address)
     })
 
     it("should have three facets -- call to facetAddresses function", async () => {
@@ -134,40 +149,12 @@ describe("diamond", async function () {
     it("lets check if the value of _nextId has been changed to 1 or not.", async () => {
         const loanFacet = await ethers.getContractAt("LoanFacet", diamondAddress)
         response = await loanFacet.getNextId()
+        console.log("NextId :", response.toString())
         assert.equal(response.toString(), "1")
     })
-    it("getUSDValue works", async () => {
+    it("make sure - minting with one diamond doesnt interfere with another", async () => {
+        //here we create another vault
         const loanFacet = await ethers.getContractAt("LoanFacet", diamondAddress)
-        //only deploy 1,2,3
-
-        // daniel ko tarika le deploy garne:
-
-        //deploy Vault..
-        //------------------------------
-        //diamond is the VAULT..
-
-        //deploy oracle
-
-        const Oracle = await ethers.getContractFactory("Oracle")
-        or = await Oracle.deploy(deployer)
-        await or.deployed()
-        console.log("Oracle Contract Deployed at " + or.address)
-
-        //deploy VaultManager. args- oracle-vault-admin
-        const VaultManager = await ethers.getContractFactory("VaultManager")
-        let vm = await VaultManager.deploy(diamondAddress, or.address, deployer)
-        await vm.deployed()
-        console.log("Vault Manager Contract Deployed at " + vm.address)
-
-        //deploy GMX contract
-        const GMX = await ethers.getContractFactory("GMX")
-        gmx = await GMX.deploy(or.address)
-        await gmx.deployed()
-        console.log("GMX Contract Deployed at " + gmx.address)
-
-        //pairs can be the cause of the error
-
-        // args- VAULTDETAILS,Whitelisted assets
         let [_VAULT_DETAILS, _WHITELISTED_ASSETS, _WHITELISTED_DETAILS] =
             getGenericVaultParams(pairs)
         _VAULT_DETAILS["GMX_CONTRACT"] = gmx.address
@@ -183,34 +170,46 @@ describe("diamond", async function () {
         const initiateSelectorAddress = loanFacet.interface.getSighash(
             "initialize((string,string,address,address,uint32),address[],(address,uint32,uint32,uint32,uint32,uint32,uint32,uint32,uint32,uint32,uint32,uint256)[])"
         )
-        console.log("initiateSelectorAddress", initiateSelectorAddress)
-        // console.log("yo", initiateSelectorAddress)
-        //LOAN FACET KO ADDRESS NI PATHAUNA LAKO CHAM.. DIAMONDlOUPE CHAIYO..
         const loanFacetAddress = await diamondLoupeFacet.facetAddress(initiateSelectorAddress)
         console.log("loanfacetAddress", loanFacetAddress)
-        //     await diamondLoupeFacet.facetAddress(/*selector ko address chaiyo.*/)
+        //need diamondCUt Facet address-- loupe nai use garnu parcha..
+        // diamondLoupe
 
+        //selector chahiyo...
+
+        const cutSelector = await diamondCutFacet.interface.getSighash("diamondCut")
+
+        const diamondCutFacetAddress = await diamondLoupeFacet.facetAddress(cutSelector)
+        console.log("diamondCutFacetAddress", diamondCutFacetAddress)
         const createVaultResponse = await vm.createVault(
             _VAULT_DETAILS,
             _WHITELISTED_ASSETS,
             _WHITELISTED_DETAILS,
             diamondAddress,
-            loanFacetAddress
+            [loanFacetAddress, diamondCutFacetAddress]
         )
         receipt = await createVaultResponse.wait(1)
-
-        //listen for the event--
-        //lets find the value of the new vault.
-        // const value = await receipt
-        console.log("receipt: " + receipt)
         console.log("Vault created")
-        response = await vm.getVaults()
-        console.log("getVaults: " + response)
-        // get the pairs.
-        console.log("The pairs :", pairs.USDC.address)
+        const clonedVaultArray = await vm.getVaults()
+        const clonedVault = clonedVaultArray[0]
+        loanFacetCloned = loanFacet.attach(clonedVault)
 
-        // response = await loanFacet.getUSDValue(pairs.USDC.address, "200")
-        // console.log(response)
-        // console.log("response: " + response.toString())
+        //check the nextId
+        response = await loanFacetCloned.getNextId()
+        console.log("clonedVault ko nextID", response.toString())
+        //mint by single VAULT.
+        response = await loanFacetCloned.mint("500")
+        receipt = response.wait(1)
+
+        //minting in the vm contract
+        response = await loanFacet.mint("2")
+        await response.wait(1)
+
+        response = await loanFacet.getMyBalance()
+        assert.equal(response.toString(), "602")
+
+        response = await loanFacetCloned.getMyBalance()
+        console.log("clonedVault ko balance", response.toString())
+        assert.equal(response.toString(), "500")
     })
 })

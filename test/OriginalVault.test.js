@@ -1,7 +1,7 @@
 const { expect, assert } = require("chai")
 const { pairs } = require("../helper-hardhat-config")
 const { ethers, getNamedAccounts } = require("hardhat")
-describe("prajan", function () {
+describe("Original Vault Test", function () {
     let vault, owner, accounts, player1, player2, player1ConnectedEthcContract
     let tx, receipt, response
     let deployer

@@ -17,6 +17,7 @@ contract VaultManager {
 
     address[] public vaults;
     mapping(address => bool) public validVault;
+    mapping(address => bytes4[]) public facetToFunctionSelectors;
 
     event FunctionSelector(
         bytes4 indexed functionSelector,
@@ -36,7 +37,7 @@ contract VaultManager {
         address[] memory _WHITELISTED_ASSETS,
         Whitelisted[] memory _WHITELISTED_DETAILS,
         address _VAULT,
-        address _LOAN_FACET_ADDRESS
+        address[] memory facetAddresses
     ) public returns (address vault) {
         console.log("Creating vault");
 
@@ -44,25 +45,47 @@ contract VaultManager {
             vault = Clones.clone(VAULT);
             _VAULT_DETAILS.ORACLE_CONTRACT = ORACLE;
             //add facets to the newly created vault
-            //FACET CUT struct is initialized
-            IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](1);
-            //function Selector array is initialized..
-            bytes4[] memory functionSelectors = new bytes4[](1);
+            //FACET CUT struct is initialized---3 facets
+            IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](2);
             //we need to modify stuffs noww..
-            functionSelectors[0] = ILoan.initialize.selector;
-            bytes4 functionSelector = functionSelectors[0];
+            // -> facetaddress ko samasya ta bhayena. tara selector ko kura aayo.
+
             cut[0] = IDiamondCut.FacetCut({
-                facetAddress: _LOAN_FACET_ADDRESS,
+                facetAddress: facetAddresses[0],
                 action: IDiamondCut.FacetCutAction.Add,
-                functionSelectors: functionSelectors
+                functionSelectors: getLoanSelectors()
+            });
+            cut[1] = IDiamondCut.FacetCut({
+                facetAddress: facetAddresses[1],
+                action: IDiamondCut.FacetCutAction.Add,
+                functionSelectors: getDiamondCutSelectors()
             });
 
-            emit FunctionSelector(functionSelector, _LOAN_FACET_ADDRESS, vault);
             IDiamondCut(vault).diamondCut(cut, address(0), "");
+            //update the value of NEXTID()
 
             IVault(vault).initialize(_VAULT_DETAILS, _WHITELISTED_ASSETS, _WHITELISTED_DETAILS);
             vaults.push(address(vault));
         }
+    }
+
+    //we have to manually set the list of selectors to add.
+    function getLoanSelectors() public pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](5);
+        selectors[0] = ILoan.initialize.selector;
+        selectors[1] = ILoan.getNextId.selector;
+        selectors[2] = ILoan.getUSDValue.selector;
+        selectors[3] = ILoan.mint.selector;
+        selectors[4] = ILoan.getMyBalance.selector;
+
+        return selectors;
+    }
+
+    //list of selector from DIamondCUtFacet
+    function getDiamondCutSelectors() public pure returns (bytes4[] memory) {
+        bytes4[] memory selectors = new bytes4[](1);
+        selectors[0] = IDiamondCut.diamondCut.selector;
+        return selectors;
     }
 
     function addValidVault(address _vault) public {
