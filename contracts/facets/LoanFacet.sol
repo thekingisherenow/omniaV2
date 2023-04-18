@@ -15,7 +15,11 @@ contract LoanFacet {
         address[] memory _WHITELISTED_ASSETS,
         Whitelisted[] memory _WHITELISTED_DETAILS
     ) external {
-        LibLoan.initialize(_VAULT_DETAILS, _WHITELISTED_ASSETS, _WHITELISTED_DETAILS);
+        LibLoan.initialize(
+            _VAULT_DETAILS,
+            _WHITELISTED_ASSETS,
+            _WHITELISTED_DETAILS
+        );
     }
 
     //GETTERS
@@ -27,7 +31,10 @@ contract LoanFacet {
         return LibLoan.getBalance(msg.sender);
     }
 
-    function getUSDValue(address _asset, uint256 _amount) external view returns (uint256) {
+    function getUSDValue(
+        address _asset,
+        uint256 _amount
+    ) external view returns (uint256) {
         return LibLoan.getUSDValue(_asset, _amount);
     }
 

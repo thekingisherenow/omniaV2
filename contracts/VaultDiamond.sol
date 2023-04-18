@@ -12,7 +12,7 @@ import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import "./libraries/AppStorage.sol";
 
-contract Diamond {
+contract VaultDiamond {
     AppStorage s;
 
     constructor(address _contractOwner, address _diamondCutFacet) payable {
@@ -50,7 +50,7 @@ contract Diamond {
         }
         // get facet from function selector
         address facet = address(bytes20(ds.facets[msg.sig]));
-        require(facet != address(0), "Diamond: Function does not exist");
+        require(facet != address(0), "VaultDiamond: Function does not exist");
         // Execute external function from facet using delegatecall and return any value.
         assembly {
             // copy function selector and any arguments

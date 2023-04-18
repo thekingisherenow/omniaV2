@@ -9,6 +9,7 @@ import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "./interfaces/IDiamondLoupe.sol";
 import {ILoan} from "./interfaces/ILoan.sol";
+import {DiamondInit} from "./upgradeInitializers/DiamondInit.sol";
 
 contract VaultManager {
     address private VAULT;
@@ -37,7 +38,8 @@ contract VaultManager {
         address[] memory _WHITELISTED_ASSETS,
         Whitelisted[] memory _WHITELISTED_DETAILS,
         address _VAULT,
-        address[] memory facetAddresses
+        address[] memory facetAddresses,
+        address initAddress
     ) public returns (address vault) {
         console.log("Creating vault");
 
@@ -60,11 +62,15 @@ contract VaultManager {
                 action: IDiamondCut.FacetCutAction.Add,
                 functionSelectors: getDiamondCutSelectors()
             });
+            //initializtion to be done here..ie. DiamondInit is called..
+            bytes memory data = abi.encodeWithSignature("init()");
+            IDiamondCut(vault).diamondCut(cut, initAddress, data);
 
-            IDiamondCut(vault).diamondCut(cut, address(0), "");
-            //update the value of NEXTID()
-
-            IVault(vault).initialize(_VAULT_DETAILS, _WHITELISTED_ASSETS, _WHITELISTED_DETAILS);
+            IVault(vault).initialize(
+                _VAULT_DETAILS,
+                _WHITELISTED_ASSETS,
+                _WHITELISTED_DETAILS
+            );
             vaults.push(address(vault));
         }
     }

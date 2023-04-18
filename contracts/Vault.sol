@@ -37,7 +37,9 @@ contract Vault is ERC1155, ReentrancyGuard {
         uint length = _WHITELISTED_ASSETS.length;
         uint32 max_exposure;
         for (uint i = 0; i < _WHITELISTED_ASSETS.length; i++) {
-            WHITELISTED_DETAILS[_WHITELISTED_DETAILS[i].collection] = _WHITELISTED_DETAILS[i];
+            WHITELISTED_DETAILS[
+                _WHITELISTED_DETAILS[i].collection
+            ] = _WHITELISTED_DETAILS[i];
             idx[_WHITELISTED_DETAILS[i].collection] = i;
 
             if (_WHITELISTED_DETAILS[i].MAX_EXPOSURE > max_exposure) {
@@ -47,12 +49,21 @@ contract Vault is ERC1155, ReentrancyGuard {
         }
     }
 
-    function getUSDValue(address _asset, uint256 _amount) public view returns (uint256) {
-        uint256 oraclePrice = IOracle(VAULT_DETAILS.ORACLE_CONTRACT).getPrice(_asset);
+    function getUSDValue(
+        address _asset,
+        uint256 _amount
+    ) public view returns (uint256) {
+        uint256 oraclePrice = IOracle(VAULT_DETAILS.ORACLE_CONTRACT).getPrice(
+            _asset
+        );
         return (_amount / 10 ** 3) * (oraclePrice / 10 ** 15);
     }
 
-    function getUSDBalanceAndDelta() public view returns (uint256, Delta[] memory deltas) {
+    function getUSDBalanceAndDelta()
+        public
+        view
+        returns (uint256, Delta[] memory deltas)
+    {
         Delta[] memory deltas = new Delta[](WHITELISTED_ASSETS.length);
 
         uint256 usd_balance;
@@ -73,15 +84,17 @@ contract Vault is ERC1155, ReentrancyGuard {
             deltas[curr_idx].collection = WHITELISTED_ASSETS[i];
 
             //now for hedges
-            GMXPosition memory pos = IGMX(VAULT_DETAILS.GMX_CONTRACT).getPosition(
-                msg.sender,
-                MAIN_ASSET,
-                WHITELISTED_ASSETS[i],
-                false
-            );
+            GMXPosition memory pos = IGMX(VAULT_DETAILS.GMX_CONTRACT)
+                .getPosition(
+                    msg.sender,
+                    MAIN_ASSET,
+                    WHITELISTED_ASSETS[i],
+                    false
+                );
 
             if (pos.size > 0) {
-                uint256 posSize = (pos.size / 10 ** 3) * (pos.averagePrice / 10 ** 15);
+                uint256 posSize = (pos.size / 10 ** 3) *
+                    (pos.averagePrice / 10 ** 15);
                 usd_balance = usd_balance + pos.collateral;
 
                 if (deltas[curr_idx].delta > posSize) {
@@ -92,13 +105,15 @@ contract Vault is ERC1155, ReentrancyGuard {
                     deltas[curr_idx].direction = false;
                 }
 
-                (bool hasProfit, uint256 delta) = IGMX(VAULT_DETAILS.GMX_CONTRACT).getDelta(
-                    WHITELISTED_ASSETS[i],
-                    pos.size,
-                    pos.averagePrice,
-                    false,
-                    pos.lastIncreasedTime
-                );
+                (bool hasProfit, uint256 delta) = IGMX(
+                    VAULT_DETAILS.GMX_CONTRACT
+                ).getDelta(
+                        WHITELISTED_ASSETS[i],
+                        pos.size,
+                        pos.averagePrice,
+                        false,
+                        pos.lastIncreasedTime
+                    );
 
                 if (hasProfit) {
                     usd_balance = usd_balance + delta;
@@ -114,29 +129,39 @@ contract Vault is ERC1155, ReentrancyGuard {
 
             if (curr_loan.timestamp != 0) {
                 //from usd
-                usd_balance = usd_balance - getUSDValue(curr_loan.collateral, curr_loan.principal);
-                uint256 duration_done = ((block.timestamp - curr_loan.timestamp) * 10000) /
+                usd_balance =
+                    usd_balance -
+                    getUSDValue(curr_loan.collateral, curr_loan.principal);
+                uint256 duration_done = ((block.timestamp -
+                    curr_loan.timestamp) * 10000) /
                     (curr_loan.repaymentDate - curr_loan.timestamp);
                 usd_balance =
                     usd_balance +
-                    ((getUSDValue(curr_loan.loan_asset, curr_loan.repayment) * duration_done) /
-                        10000);
+                    ((getUSDValue(curr_loan.loan_asset, curr_loan.repayment) *
+                        duration_done) / 10000);
 
                 //from delta
                 uint256 collateral_value = getUSDValue(
                     curr_loan.collateral,
                     curr_loan.lockedAmount
                 );
-                uint256 loan_value = getUSDValue(curr_loan.loan_asset, curr_loan.repayment);
+                uint256 loan_value = getUSDValue(
+                    curr_loan.loan_asset,
+                    curr_loan.repayment
+                );
 
                 if (collateral_value < ((loan_value * 101) / 100)) {
                     uint256 new_idx = idx[curr_loan.loan_asset];
 
                     if (deltas[new_idx].delta > loan_value) {
-                        deltas[new_idx].delta = deltas[new_idx].delta - loan_value;
+                        deltas[new_idx].delta =
+                            deltas[new_idx].delta -
+                            loan_value;
                         deltas[new_idx].direction = true;
                     } else {
-                        deltas[new_idx].delta = loan_value - deltas[new_idx].delta;
+                        deltas[new_idx].delta =
+                            loan_value -
+                            deltas[new_idx].delta;
                         deltas[new_idx].direction = false;
                     }
                 }
@@ -152,15 +177,17 @@ contract Vault is ERC1155, ReentrancyGuard {
         for (uint i = 0; i < deltas.length; i++) {
             Delta memory curr_delta = deltas[i];
 
-            GMXPosition memory pos = IGMX(VAULT_DETAILS.GMX_CONTRACT).getPosition(
-                msg.sender,
-                MAIN_ASSET,
-                curr_delta.collection,
-                false
-            );
+            GMXPosition memory pos = IGMX(VAULT_DETAILS.GMX_CONTRACT)
+                .getPosition(
+                    msg.sender,
+                    MAIN_ASSET,
+                    curr_delta.collection,
+                    false
+                );
 
-            uint256 allowed_divergence = (WHITELISTED_DETAILS[curr_delta.collection]
-                .MAX_DELTA_DIVERGENCE * usd_balance) / 100;
+            uint256 allowed_divergence = (WHITELISTED_DETAILS[
+                curr_delta.collection
+            ].MAX_DELTA_DIVERGENCE * usd_balance) / 100;
 
             if (
                 (curr_delta.delta * 100) / usd_balance >
@@ -170,8 +197,9 @@ contract Vault is ERC1155, ReentrancyGuard {
                     uint256 diff = pos.size - curr_delta.delta;
 
                     if (diff > allowed_divergence) {
-                        uint256 decrease_size = ((WHITELISTED_DETAILS[curr_delta.collection]
-                            .COLLATERAL_SIZE * diff) / pos.size);
+                        uint256 decrease_size = ((WHITELISTED_DETAILS[
+                            curr_delta.collection
+                        ].COLLATERAL_SIZE * diff) / pos.size);
                         IGMX(VAULT_DETAILS.GMX_CONTRACT).decreasePosition(
                             msg.sender,
                             MAIN_ASSET,
@@ -181,7 +209,8 @@ contract Vault is ERC1155, ReentrancyGuard {
                             false,
                             msg.sender
                         );
-                        WHITELISTED_DETAILS[curr_delta.collection].COLLATERAL_SIZE -= decrease_size;
+                        WHITELISTED_DETAILS[curr_delta.collection]
+                            .COLLATERAL_SIZE -= decrease_size;
                     }
                 } else if (pos.size < curr_delta.delta) {
                     uint256 diff = curr_delta.delta - pos.size;
@@ -189,8 +218,14 @@ contract Vault is ERC1155, ReentrancyGuard {
                     if (diff > allowed_divergence) {
                         uint256 collateralSize = diff * 2;
 
-                        IERC20(MAIN_ASSET).approve(VAULT_DETAILS.GMX_CONTRACT, collateralSize);
-                        IERC20(MAIN_ASSET).transfer(VAULT_DETAILS.GMX_CONTRACT, collateralSize);
+                        IERC20(MAIN_ASSET).approve(
+                            VAULT_DETAILS.GMX_CONTRACT,
+                            collateralSize
+                        );
+                        IERC20(MAIN_ASSET).transfer(
+                            VAULT_DETAILS.GMX_CONTRACT,
+                            collateralSize
+                        );
                         IGMX(VAULT_DETAILS.GMX_CONTRACT).increasePosition(
                             msg.sender,
                             MAIN_ASSET,
@@ -209,12 +244,14 @@ contract Vault is ERC1155, ReentrancyGuard {
                         msg.sender,
                         MAIN_ASSET,
                         curr_delta.collection,
-                        WHITELISTED_DETAILS[curr_delta.collection].COLLATERAL_SIZE,
+                        WHITELISTED_DETAILS[curr_delta.collection]
+                            .COLLATERAL_SIZE,
                         pos.size,
                         false,
                         msg.sender
                     );
-                    WHITELISTED_DETAILS[curr_delta.collection].COLLATERAL_SIZE = 0;
+                    WHITELISTED_DETAILS[curr_delta.collection]
+                        .COLLATERAL_SIZE = 0;
                 }
             }
         }
@@ -245,7 +282,10 @@ contract Vault is ERC1155, ReentrancyGuard {
 
         if (ltv > 0) {
             if (((details.slope * ltv) / 1000) > details.intercept) {
-                apr = Math.max(apr, ((details.slope * ltv) / 1000) - details.intercept);
+                apr = Math.max(
+                    apr,
+                    ((details.slope * ltv) / 1000) - details.intercept
+                );
             }
         }
 
@@ -255,7 +295,8 @@ contract Vault is ERC1155, ReentrancyGuard {
         require(ltv < 950, "5");
 
         uint256 repayment = _loan_amount +
-            ((_loan_amount * apr * (_repaymentDate - block.timestamp)) / 31536000000);
+            ((_loan_amount * apr * (_repaymentDate - block.timestamp)) /
+                31536000000);
 
         bool success = IERC20(_collateral).transferFrom(
             msg.sender,
@@ -296,7 +337,10 @@ contract Vault is ERC1155, ReentrancyGuard {
         // not enough balance or not approved
         require(success, "1");
 
-        IERC20(curr_loan.collateral).transfer(msg.sender, curr_loan.lockedAmount);
+        IERC20(curr_loan.collateral).transfer(
+            msg.sender,
+            curr_loan.lockedAmount
+        );
 
         delete _loans[_loanId];
 
@@ -304,12 +348,21 @@ contract Vault is ERC1155, ReentrancyGuard {
     }
 
     //check if a liquidity addition or swap will create an imabalance
-    function checkBalanced(address _asset, uint256 _amount) public view returns (bool) {
-        uint256 currBalance = getUSDValue(_asset, IERC20(_asset).balanceOf(address(this)));
+    function checkBalanced(
+        address _asset,
+        uint256 _amount
+    ) public view returns (bool) {
+        uint256 currBalance = getUSDValue(
+            _asset,
+            IERC20(_asset).balanceOf(address(this))
+        );
         (uint256 usdBalance, ) = getUSDBalanceAndDelta();
 
         if (usdBalance > 0) {
-            if (((currBalance * 100) / usdBalance) > WHITELISTED_DETAILS[_asset].MAX_EXPOSURE) {
+            if (
+                ((currBalance * 100) / usdBalance) >
+                WHITELISTED_DETAILS[_asset].MAX_EXPOSURE
+            ) {
                 return false;
             }
         }
@@ -324,8 +377,11 @@ contract Vault is ERC1155, ReentrancyGuard {
 
         uint256 collateral_worth = getUSDValue(_from, _amount);
 
-        uint256 oraclePrice = IOracle(VAULT_DETAILS.ORACLE_CONTRACT).getPrice(_to);
-        uint256 output_amt = (((collateral_worth * 10 ** 5) / oraclePrice)) / 10 ** 5;
+        uint256 oraclePrice = IOracle(VAULT_DETAILS.ORACLE_CONTRACT).getPrice(
+            _to
+        );
+        uint256 output_amt = (((collateral_worth * 10 ** 5) / oraclePrice)) /
+            10 ** 5;
 
         // commenting out for hackathon as its moot to check it as it will fail either way
         // require(IERC20(_to).balanceOf(address(this)) >= output_amt, "Insufficient balance");
@@ -335,15 +391,23 @@ contract Vault is ERC1155, ReentrancyGuard {
         // not enough balance or not approved
         require(success, "1");
 
-        bool success2 = IERC20(_from).transferFrom(msg.sender, address(this), _amount);
+        bool success2 = IERC20(_from).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         // not enough balance or not approved
         require(success, "1");
     }
 
-    function addLiquidity(uint256 _amount, address _asset) external nonReentrant {
+    function addLiquidity(
+        uint256 _amount,
+        address _asset
+    ) external nonReentrant {
         //Not in whitelist
         require(
-            WHITELISTED_DETAILS[_asset].collection != 0x0000000000000000000000000000000000000000,
+            WHITELISTED_DETAILS[_asset].collection !=
+                0x0000000000000000000000000000000000000000,
             "2"
         );
 
@@ -360,7 +424,11 @@ contract Vault is ERC1155, ReentrancyGuard {
             shares = _amount * (totalSupply / usdBalance);
         }
 
-        bool success = IERC20(_asset).transferFrom(msg.sender, address(this), _amount);
+        bool success = IERC20(_asset).transferFrom(
+            msg.sender,
+            address(this),
+            _amount
+        );
         if (success == false) {
             revert();
         }
@@ -371,7 +439,10 @@ contract Vault is ERC1155, ReentrancyGuard {
         totalSupply = totalSupply + shares;
     }
 
-    function withdrawLiquidity(uint256 shares, address _asset) external nonReentrant {
+    function withdrawLiquidity(
+        uint256 shares,
+        address _asset
+    ) external nonReentrant {
         uint256 balance = this.balanceOf(msg.sender, 0);
 
         if (balance < shares) {
