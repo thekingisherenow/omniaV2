@@ -1,5 +1,5 @@
 pragma solidity ^0.8.9;
-import {GMXPosition} from "../VaultLib.sol";
+import {GMXPosition} from "../libraries/AppStorage.sol";
 
 interface IGMX {
     function increasePosition(

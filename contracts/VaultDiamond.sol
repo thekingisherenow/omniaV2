@@ -11,10 +11,16 @@ pragma solidity ^0.8.0;
 import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import "./libraries/AppStorage.sol";
+import "hardhat/console.sol";
+import {LibMeta} from "./libraries/LibMeta.sol";
 
 contract VaultDiamond {
-    AppStorage s;
+    AppStorage internal s;
 
+    // these data should be saved in the diamondStorage.
+    // bool private initialized;
+
+    //=> further research on the contract owner is required..
     constructor(address _contractOwner, address _diamondCutFacet) payable {
         LibDiamond.setContractOwner(_contractOwner);
 
@@ -30,13 +36,63 @@ contract VaultDiamond {
         LibDiamond.diamondCut(cut, address(0), "");
     }
 
-    //ok- i am adding a function for test.. But only owners should be allowed to use this function.. or it shouldn't be exposed like this in production.
-    function diamondCut(
-        IDiamondCut.FacetCut[] memory _cut,
-        address _init,
-        bytes memory _calldata
-    ) external {
-        LibDiamond.diamondCut(_cut, _init, _calldata);
+    function initializeClone(
+        address _contractOwner,
+        address[] memory facetAddresses,
+        address initAddress
+    ) public {
+        console.log("s._nextId inside initializeClone", s._nextId);
+        s._nextId = 3;
+        console.log("s._nextId inside initializeClone", s._nextId);
+        LibDiamond.setContractOwner(_contractOwner);
+        //
+        address owner = LibDiamond.contractOwner();
+        console.log(
+            "owner of contract just before initial cut in clone",
+            owner
+        );
+        // Add the diamondCut external function from the diamondCutFacet
+        IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](6);
+        cut[0] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[0],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getDiamondCutSelectors()
+        });
+        cut[1] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[1],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getDiamondLoupeFacetSelectors() //loupe
+        });
+        cut[2] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[2],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getOwnershipFacetSelectors() //owner
+        });
+        cut[3] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[3],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getLoanSelectors() //loan
+        });
+        cut[4] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[4],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getSwapSelectors() //swap
+        });
+        cut[5] = IDiamondCut.FacetCut({
+            facetAddress: facetAddresses[5],
+            action: IDiamondCut.FacetCutAction.Add,
+            functionSelectors: LibMeta.getErc1155FacetSelectors() //erc1155
+        });
+
+        //initialization to be done here..ie. DiamondInit is called..
+        bytes memory data = abi.encodeWithSignature("init()");
+        console.log("before Cut !");
+        console.log("initAddress", initAddress);
+        LibDiamond.diamondCut(cut, initAddress, data);
+        console.log("after cut !");
+
+        //change value of initialized to true to prevent it to run again.
+        // initialized = true;
     }
 
     // Find facet for function that is called and execute the

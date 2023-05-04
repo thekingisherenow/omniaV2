@@ -7,8 +7,10 @@ import "hardhat/console.sol";
 import {VaultDetails} from "./VaultLib.sol";
 import {LibDiamond} from "./libraries/LibDiamond.sol";
 import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
+import {IDiamond} from "./interfaces/IDiamond.sol";
 import {IDiamondLoupe} from "./interfaces/IDiamondLoupe.sol";
-import {ILoan} from "./interfaces/ILoan.sol";
+import {IOwnership} from "./interfaces/IOwnership.sol";
+
 import {DiamondInit} from "./upgradeInitializers/DiamondInit.sol";
 
 contract VaultManager {
@@ -42,29 +44,23 @@ contract VaultManager {
         address initAddress
     ) public returns (address vault) {
         console.log("Creating vault");
-
+        console.log("initAddress: ", initAddress);
         if (validVault[_VAULT] == true) {
             vault = Clones.clone(VAULT);
             _VAULT_DETAILS.ORACLE_CONTRACT = ORACLE;
-            //add facets to the newly created vault
-            //FACET CUT struct is initialized---3 facets
-            IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](2);
-            //we need to modify stuffs noww..
-            // -> facetaddress ko samasya ta bhayena. tara selector ko kura aayo.
 
-            cut[0] = IDiamondCut.FacetCut({
-                facetAddress: facetAddresses[0],
-                action: IDiamondCut.FacetCutAction.Add,
-                functionSelectors: getLoanSelectors()
-            });
-            cut[1] = IDiamondCut.FacetCut({
-                facetAddress: facetAddresses[1],
-                action: IDiamondCut.FacetCutAction.Add,
-                functionSelectors: getDiamondCutSelectors()
-            });
-            //initializtion to be done here..ie. DiamondInit is called..
-            bytes memory data = abi.encodeWithSignature("init()");
-            IDiamondCut(vault).diamondCut(cut, initAddress, data);
+            console.log("msg.sender", msg.sender);
+            console.log("admin", ADMIN);
+
+            // -> the biggest problem is : setting owner of the contract.
+            //since VaultManager contract calls the initializeDiamond function,which inturn calls diamondCut function, msg.sender in the vault contract is VaultManager contract.. and passing the original owner address into the diamondCut function brings complexity to the diamond contract.So VAULTMANAGER is set as the owner of the vault contract.
+            IDiamond(vault).initializeClone(
+                address(this),
+                facetAddresses,
+                initAddress
+            );
+
+            // console.log("after cut !");
 
             IVault(vault).initialize(
                 _VAULT_DETAILS,
@@ -72,26 +68,12 @@ contract VaultManager {
                 _WHITELISTED_DETAILS
             );
             vaults.push(address(vault));
+
+            //we give the ownership to the deployer in the end.
+            IOwnership(vault).transferOwnership(msg.sender);
+            address changedOwner = IOwnership(vault).owner();
+            console.log("changedOwner: ", changedOwner);
         }
-    }
-
-    //we have to manually set the list of selectors to add.
-    function getLoanSelectors() public pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](5);
-        selectors[0] = ILoan.initialize.selector;
-        selectors[1] = ILoan.getNextId.selector;
-        selectors[2] = ILoan.getUSDValue.selector;
-        selectors[3] = ILoan.mint.selector;
-        selectors[4] = ILoan.getMyBalance.selector;
-
-        return selectors;
-    }
-
-    //list of selector from DIamondCUtFacet
-    function getDiamondCutSelectors() public pure returns (bytes4[] memory) {
-        bytes4[] memory selectors = new bytes4[](1);
-        selectors[0] = IDiamondCut.diamondCut.selector;
-        return selectors;
     }
 
     function addValidVault(address _vault) public {

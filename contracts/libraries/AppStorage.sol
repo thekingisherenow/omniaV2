@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import {LibDiamond} from "./LibDiamond.sol";
+
 struct GMXPosition {
     uint256 size;
     uint256 collateral;
@@ -39,6 +41,19 @@ struct Whitelisted {
     uint256 COLLATERAL_SIZE;
 }
 
+struct LoanDetails {
+    address collateral;
+    address loan_asset;
+    uint256 collateral_amount;
+    uint256 loan_amount;
+    uint256 repayment_date;
+    uint256 collateral_worth;
+    uint256 loan_amount_worth;
+    uint256 ltv;
+    uint256 apr;
+    uint256 repayment;
+}
+
 struct Loan {
     uint256 timestamp;
     address collateral;
@@ -59,4 +74,6 @@ struct AppStorage {
     // uint32  constant LIQUIDITY_POSITION = 0;
     uint256 _nextId;
     uint256 totalSupply;
+    //testing mapps
+    address owner;
 }

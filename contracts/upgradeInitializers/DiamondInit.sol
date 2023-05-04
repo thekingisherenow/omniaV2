@@ -14,17 +14,26 @@ import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 import {IERC173} from "../interfaces/IERC173.sol";
 import {IERC165} from "../interfaces/IERC165.sol";
 import {AppStorage} from "../libraries/AppStorage.sol";
+import "hardhat/console.sol";
 
 // It is expected that this contract is customized if you want to deploy your diamond
 // with data from a deployment script. Use the init function to initialize state variables
 // of your diamond. Add parameters to the init function if you need to.
 
 contract DiamondInit {
-    AppStorage s;
-
     // You can add parameters to this function in order to pass in
     // data to set your own state variables
+    AppStorage internal s;
+
     function init() external {
+        console.log("-----------------");
+        console.log("s._nextId Value while entering init", s._nextId);
+        s._nextId = 1;
+        console.log("s._nextId Value after changing value ", s._nextId);
+        console.log("-----------------");
+
+        console.log("init diamond bhitra chu !");
+        console.log("why isnt the value changinggggg..");
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;
@@ -32,8 +41,7 @@ contract DiamondInit {
         ds.supportedInterfaces[type(IDiamondLoupe).interfaceId] = true;
         ds.supportedInterfaces[type(IERC173).interfaceId] = true;
 
-        //PRAJAN -----
-        s._nextId = 1;
+        //nextId variable of AppStorage
 
         // add your own state variables
         // EIP-2535 specifies that the `diamondCut` function takes two optional

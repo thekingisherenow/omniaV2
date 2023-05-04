@@ -1,20 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import {VaultDetails, Whitelisted} from "../libraries/AppStorage.sol";
+import "../libraries/AppStorage.sol";
 
 interface ILoan {
-    function initialize(
-        VaultDetails memory _VAULT_DETAILS,
-        address[] memory _WHITELISTED_ASSETS,
-        Whitelisted[] memory _WHITELISTED_DETAILS
-    ) external;
-
     function getNextId() external view returns (uint256);
 
-    function getUSDValue(address _asset, uint256 _amount) external view returns (uint256);
+    function hedgePositions() external;
 
-    function mint(uint256 amount) external;
+    function createLoan(
+        address _collateral,
+        address _loan_asset,
+        uint256 _collateral_amount,
+        uint256 _loan_amount,
+        uint256 _repaymentDate
+    ) external returns (uint256 loanId);
 
-    function getMyBalance() external view returns (uint256);
+    function repayLoan(uint32 _loanId) external;
+
+    function _loans(uint256 loanId) external view returns (Loan memory);
 }

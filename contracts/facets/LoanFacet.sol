@@ -1,46 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import "../libraries/LibLoan.sol";
-import "../libraries/AppStorage.sol";
+import {AppStorage} from "../libraries/AppStorage.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract LoanFacet {
+contract LoanFacet is ReentrancyGuard {
     AppStorage internal s;
 
+    event loanCreated(
+        Loan loan_details,
+        address indexed borrower,
+        uint256 indexed loanId
+    );
+
     function getNextId() external view returns (uint256) {
-        return s._nextId;
+        return LibLoan.getNextId();
     }
 
-    function initialize(
-        VaultDetails memory _VAULT_DETAILS,
-        address[] memory _WHITELISTED_ASSETS,
-        Whitelisted[] memory _WHITELISTED_DETAILS
-    ) external {
-        LibLoan.initialize(
-            _VAULT_DETAILS,
-            _WHITELISTED_ASSETS,
-            _WHITELISTED_DETAILS
-        );
+    function _loans(uint256 loanId) external view returns (Loan memory) {
+        return LibLoan._loans(loanId);
     }
 
-    //GETTERS
-    function getBalance(address addr) external view returns (uint256) {
-        return LibLoan.getBalance(addr);
+    function createLoan(
+        address _collateral,
+        address _loan_asset,
+        uint256 _collateral_amount,
+        uint256 _loan_amount,
+        uint256 _repaymentDate
+    ) external nonReentrant returns (uint256 loanId) {
+        return
+            LibLoan.createLoan(
+                _collateral,
+                _loan_asset,
+                _collateral_amount,
+                _loan_amount,
+                _repaymentDate
+            );
     }
 
-    function getMyBalance() external view returns (uint256) {
-        return LibLoan.getBalance(msg.sender);
+    function repayLoan(uint32 _loanId) external {
+        LibLoan.repayLoan(_loanId);
     }
 
-    function getUSDValue(
-        address _asset,
-        uint256 _amount
-    ) external view returns (uint256) {
-        return LibLoan.getUSDValue(_asset, _amount);
+    function hedgePositions() external {
+        return LibLoan.hedgePositions();
     }
-
-    function mint(uint256 amount) external {
-        return LibLoan.mint(msg.sender, amount);
-    }
-
-    //SETTERS
 }

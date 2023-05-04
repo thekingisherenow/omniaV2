@@ -5,7 +5,7 @@ const {
   findAddressPositionInFacets,
 } = require("../scripts/libraries/diamond.js");
 
-const { getGenericVaultParams } = require("../scripts/daniel-deploy.js");
+const { getGenericVaultParams } = require("../scripts/getVaultParams.js");
 const { deployDiamond } = require("../scripts/deploy.js");
 const { pairs } = require("../helper-hardhat-config.js");
 const { assert } = require("chai");
@@ -23,6 +23,7 @@ describe("Simple VaultDiamond Tests.", async function () {
   let deployer;
   const addresses = [];
   let or, vm, gmx;
+  let loanFacet, swapFacet;
 
   before(async function () {
     console.log("yo");
@@ -78,7 +79,11 @@ describe("Simple VaultDiamond Tests.", async function () {
     let selectors = getSelectors(diamondCutFacet);
     result = await diamondLoupeFacet.facetFunctionSelectors(addresses[0]);
     assert.sameMembers(result, selectors);
-    selectors = getSelectors(diamondLoupeFacet);
+    // i have removed the supportsInterface function from the cut because ERC1155 facets
+    //have similar function.
+    selectors = getSelectors(diamondLoupeFacet).remove([
+      "supportsInterface(bytes4)",
+    ]);
     result = await diamondLoupeFacet.facetFunctionSelectors(addresses[1]);
     assert.sameMembers(result, selectors);
     selectors = getSelectors(ownershipFacet);
@@ -87,7 +92,7 @@ describe("Simple VaultDiamond Tests.", async function () {
   });
   it("should add Loan Facet", async () => {
     const LoanFacet = await ethers.getContractFactory("LoanFacet");
-    const loanFacet = await LoanFacet.deploy();
+    loanFacet = await LoanFacet.deploy();
     await loanFacet.deployed();
     addresses.push(loanFacet.address);
     const selectors = getSelectors(loanFacet);
@@ -114,7 +119,7 @@ describe("Simple VaultDiamond Tests.", async function () {
 
   it("should add Swap Facet", async () => {
     const SwapFacet = await ethers.getContractFactory("SwapFacet");
-    const swapFacet = await SwapFacet.deploy();
+    swapFacet = await SwapFacet.deploy();
     await swapFacet.deployed();
     addresses.push(swapFacet.address);
     const selectors = getSelectors(swapFacet);
@@ -165,5 +170,40 @@ describe("Simple VaultDiamond Tests.", async function () {
     response = await loanFacet.getNextId();
     console.log("NextId :", response.toString());
     assert.equal(response.toString(), "1");
+  });
+  // Both ERC1155Facet and DiamondLoupe had supportsInterface(bytes4) function..
+  //and i removed the supportInterface from diamondLoupe facet--- temporarily
+  //to avoid the function selector clash..
+  it("should add ERC1155 facet", async () => {
+    const ERC1155Facet = await ethers.getContractFactory("ERC1155Facet");
+    const erc1155Facet = await ERC1155Facet.deploy();
+    await erc1155Facet.deployed();
+    addresses.push(erc1155Facet.address);
+    console.log("erc1155Facet", erc1155Facet);
+    //
+    const erc1155Selectors = getSelectors(erc1155Facet);
+
+    console.log("erc1155Selectors", erc1155Selectors);
+
+    tx = await diamondCutFacet.diamondCut(
+      [
+        {
+          facetAddress: erc1155Facet.address,
+          action: FacetCutAction.Add,
+          functionSelectors: erc1155Selectors,
+        },
+      ],
+      ethers.constants.AddressZero,
+      "0x",
+      { gasLimit: 800000 }
+    );
+    receipt = await tx.wait();
+    if (!receipt.status) {
+      throw Error(`VaultDiamond upgrade failed: ${tx.hash}`);
+    }
+    result = await diamondLoupeFacet.facetFunctionSelectors(
+      erc1155Facet.address
+    );
+    assert.sameMembers(result, erc1155Selectors);
   });
 });

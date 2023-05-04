@@ -1,27 +1,65 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {LibSwap} from "../libraries/LibSwap.sol";
-import {AppStorage} from "../libraries/AppStorage.sol";
+import "../libraries/AppStorage.sol";
+import {ReentrancyGuard} from "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
-contract SwapFacet {
+contract SwapFacet is ReentrancyGuard {
     AppStorage internal s;
 
-    //GETTERS
-    function getBalanceSwap(address addr) external view returns (uint256) {
-        return LibSwap.getBalance(addr);
+    function checkBalanced(
+        address _asset,
+        uint256 _amount
+    ) external view returns (bool) {
+        return LibSwap.checkBalanced(_asset, _amount);
     }
 
-    function getMyBalanceSwap() external view returns (uint256) {
-        return LibSwap.getBalance(msg.sender);
+    function initialize(
+        VaultDetails memory _VAULT_DETAILS,
+        address[] memory _WHITELISTED_ASSETS,
+        Whitelisted[] memory _WHITELISTED_DETAILS
+    ) external {
+        LibSwap.initialize(
+            _VAULT_DETAILS,
+            _WHITELISTED_ASSETS,
+            _WHITELISTED_DETAILS
+        );
     }
 
-    function getConstantValueSwap() external pure returns (uint256) {
-        return 2;
+    function addLiquidity(
+        uint256 _amount,
+        address _asset
+    ) external nonReentrant {
+        LibSwap.addLiquidity(_amount, _asset);
     }
 
-    function mintSwap(uint256 amount) external {
-        return LibSwap.mint(msg.sender, amount);
+    function withdrawLiquidity(
+        uint256 shares,
+        address _asset
+    ) external nonReentrant {
+        LibSwap.withdrawLiquidity(shares, _asset);
     }
+
+    function getUSDValue(
+        address _asset,
+        uint256 _amount
+    ) external view returns (uint256) {
+        return LibSwap.getUSDValue(_asset, _amount);
+    }
+
+    function getUSDBalanceAndDelta()
+        external
+        view
+        returns (uint256, Delta[] memory deltas)
+    {
+        return LibSwap.getUSDBalanceAndDelta();
+    }
+
+    function swap(address _from, address _to, uint256 _amount) external {
+        LibSwap.swap(_from, _to, _amount);
+    }
+
+    // uri function  was removed..
 
     //SETTERS
 }
