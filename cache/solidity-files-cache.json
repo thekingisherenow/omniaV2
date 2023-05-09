@@ -312,7 +312,7 @@
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/libraries/LibLoan.sol": {
-      "lastModificationDate": 1683182904539,
+      "lastModificationDate": 1683182926449,
       "contentHash": "5a26aed8608ba93240c8ce8242266919",
       "sourceName": "contracts/libraries/LibLoan.sol",
       "solcConfig": {
@@ -1162,6 +1162,52 @@
         "ISolidStateERC1155"
       ]
     },
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/enumerable/ERC1155EnumerableInternal.sol": {
+      "lastModificationDate": 1680692837186,
+      "contentHash": "ef1d028f73c655f6cb10c7a23bf2c0b1",
+      "sourceName": "@solidstate/contracts/token/ERC1155/enumerable/ERC1155EnumerableInternal.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "../../../data/EnumerableSet.sol",
+        "../base/ERC1155BaseInternal.sol",
+        "./ERC1155EnumerableStorage.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.8"
+      ],
+      "artifacts": [
+        "ERC1155EnumerableInternal"
+      ]
+    },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/base/ERC1155Base.sol": {
       "lastModificationDate": 1680692837226,
       "contentHash": "93bdd41082300ca77bdf69d4d3fb5621",
@@ -1207,52 +1253,6 @@
       ],
       "artifacts": [
         "ERC1155Base"
-      ]
-    },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/enumerable/ERC1155EnumerableInternal.sol": {
-      "lastModificationDate": 1680692837186,
-      "contentHash": "ef1d028f73c655f6cb10c7a23bf2c0b1",
-      "sourceName": "@solidstate/contracts/token/ERC1155/enumerable/ERC1155EnumerableInternal.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "../../../data/EnumerableSet.sol",
-        "../base/ERC1155BaseInternal.sol",
-        "./ERC1155EnumerableStorage.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.8"
-      ],
-      "artifacts": [
-        "ERC1155EnumerableInternal"
       ]
     },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/metadata/ERC1155Metadata.sol": {
@@ -1613,6 +1613,51 @@
         "IERC165BaseInternal"
       ]
     },
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol": {
+      "lastModificationDate": 1680692837226,
+      "contentHash": "d154443de67d9640197c5de8a979303e",
+      "sourceName": "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "../../../interfaces/IERC1155.sol",
+        "./IERC1155BaseInternal.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.8"
+      ],
+      "artifacts": [
+        "IERC1155Base"
+      ]
+    },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/enumerable/IERC1155Enumerable.sol": {
       "lastModificationDate": 1680692837186,
       "contentHash": "f33861ec03a298ade8311faa3dc4e6d0",
@@ -1701,10 +1746,10 @@
         "IERC1155Metadata"
       ]
     },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol": {
-      "lastModificationDate": 1680692837226,
-      "contentHash": "d154443de67d9640197c5de8a979303e",
-      "sourceName": "@solidstate/contracts/token/ERC1155/base/IERC1155Base.sol",
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/interfaces/IERC1155.sol": {
+      "lastModificationDate": 1680692837186,
+      "contentHash": "9d00b6f5c0b4f67cb5f847290c20069d",
+      "sourceName": "@solidstate/contracts/interfaces/IERC1155.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -1736,14 +1781,14 @@
         }
       },
       "imports": [
-        "../../../interfaces/IERC1155.sol",
-        "./IERC1155BaseInternal.sol"
+        "./IERC165.sol",
+        "./IERC1155Internal.sol"
       ],
       "versionPragmas": [
         "^0.8.8"
       ],
       "artifacts": [
-        "IERC1155Base"
+        "IERC1155"
       ]
     },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/base/IERC1155BaseInternal.sol": {
@@ -1874,181 +1919,6 @@
         "IERC1155MetadataInternal"
       ]
     },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/interfaces/IERC1155.sol": {
-      "lastModificationDate": 1680692837186,
-      "contentHash": "9d00b6f5c0b4f67cb5f847290c20069d",
-      "sourceName": "@solidstate/contracts/interfaces/IERC1155.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "./IERC165.sol",
-        "./IERC1155Internal.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.8"
-      ],
-      "artifacts": [
-        "IERC1155"
-      ]
-    },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/interfaces/IERC1155Receiver.sol": {
-      "lastModificationDate": 1680692837186,
-      "contentHash": "50d78e23477e4a4b16b3995b458d7e9a",
-      "sourceName": "@solidstate/contracts/interfaces/IERC1155Receiver.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "./IERC165.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.8"
-      ],
-      "artifacts": [
-        "IERC1155Receiver"
-      ]
-    },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/utils/AddressUtils.sol": {
-      "lastModificationDate": 1680692837186,
-      "contentHash": "ed9ca7d575dcdaac321baa215901dcbd",
-      "sourceName": "@solidstate/contracts/utils/AddressUtils.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "./UintUtils.sol"
-      ],
-      "versionPragmas": [
-        "^0.8.8"
-      ],
-      "artifacts": [
-        "AddressUtils"
-      ]
-    },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/utils/UintUtils.sol": {
-      "lastModificationDate": 1680692837186,
-      "contentHash": "29ed272a1ff94be3a26f39ca7f64d1f9",
-      "sourceName": "@solidstate/contracts/utils/UintUtils.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.8"
-      ],
-      "artifacts": [
-        "UintUtils"
-      ]
-    },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/data/EnumerableSet.sol": {
       "lastModificationDate": 1680692837186,
       "contentHash": "08d265ad27204a87276c35074ab611ce",
@@ -2135,10 +2005,98 @@
         "ERC1155EnumerableStorage"
       ]
     },
-    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataStorage.sol": {
-      "lastModificationDate": 1680692837226,
-      "contentHash": "c0cc634f2c95cd5064a283b4bb34472e",
-      "sourceName": "@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataStorage.sol",
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/utils/AddressUtils.sol": {
+      "lastModificationDate": 1680692837186,
+      "contentHash": "ed9ca7d575dcdaac321baa215901dcbd",
+      "sourceName": "@solidstate/contracts/utils/AddressUtils.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "./UintUtils.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.8"
+      ],
+      "artifacts": [
+        "AddressUtils"
+      ]
+    },
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/interfaces/IERC1155Receiver.sol": {
+      "lastModificationDate": 1680692837186,
+      "contentHash": "50d78e23477e4a4b16b3995b458d7e9a",
+      "sourceName": "@solidstate/contracts/interfaces/IERC1155Receiver.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "./IERC165.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.8"
+      ],
+      "artifacts": [
+        "IERC1155Receiver"
+      ]
+    },
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/utils/UintUtils.sol": {
+      "lastModificationDate": 1680692837186,
+      "contentHash": "29ed272a1ff94be3a26f39ca7f64d1f9",
+      "sourceName": "@solidstate/contracts/utils/UintUtils.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -2174,7 +2132,7 @@
         "^0.8.8"
       ],
       "artifacts": [
-        "ERC1155MetadataStorage"
+        "UintUtils"
       ]
     },
     "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataInternal.sol": {
@@ -2222,10 +2180,10 @@
         "ERC1155MetadataInternal"
       ]
     },
-    "/home/pj/omnia-contractsV2/node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
-      "lastModificationDate": 1679215104356,
-      "contentHash": "b9c58920ce74d6dc819161786112e7ee",
-      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+    "/home/pj/omnia-contractsV2/node_modules/@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataStorage.sol": {
+      "lastModificationDate": 1680692837226,
+      "contentHash": "c0cc634f2c95cd5064a283b4bb34472e",
+      "sourceName": "@solidstate/contracts/token/ERC1155/metadata/ERC1155MetadataStorage.sol",
       "solcConfig": {
         "version": "0.8.17",
         "settings": {
@@ -2258,10 +2216,10 @@
       },
       "imports": [],
       "versionPragmas": [
-        "^0.8.0"
+        "^0.8.8"
       ],
       "artifacts": [
-        "Math"
+        "ERC1155MetadataStorage"
       ]
     },
     "/home/pj/omnia-contractsV2/node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
@@ -2304,6 +2262,48 @@
       ],
       "artifacts": [
         "IERC20"
+      ]
+    },
+    "/home/pj/omnia-contractsV2/node_modules/@openzeppelin/contracts/utils/math/Math.sol": {
+      "lastModificationDate": 1679215104356,
+      "contentHash": "b9c58920ce74d6dc819161786112e7ee",
+      "sourceName": "@openzeppelin/contracts/utils/math/Math.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Math"
       ]
     },
     "/home/pj/omnia-contractsV2/contracts/GMX.sol": {
@@ -2542,46 +2542,6 @@
         "VaultManager"
       ]
     },
-    "/home/pj/omnia-contractsV2/contracts/VaultLib.sol": {
-      "lastModificationDate": 1680692898886,
-      "contentHash": "3eb437dd3930d0bac0fc556361422f29",
-      "sourceName": "contracts/VaultLib.sol",
-      "solcConfig": {
-        "version": "0.8.17",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        "^0.8.9"
-      ],
-      "artifacts": []
-    },
     "/home/pj/omnia-contractsV2/contracts/interfaces/IVault.sol": {
       "lastModificationDate": 1679213406066,
       "contentHash": "bd61355609e274898f3b29c95246a8e0",
@@ -2625,6 +2585,46 @@
       "artifacts": [
         "IVault"
       ]
+    },
+    "/home/pj/omnia-contractsV2/contracts/VaultLib.sol": {
+      "lastModificationDate": 1680692898886,
+      "contentHash": "3eb437dd3930d0bac0fc556361422f29",
+      "sourceName": "contracts/VaultLib.sol",
+      "solcConfig": {
+        "version": "0.8.17",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.9"
+      ],
+      "artifacts": []
     },
     "/home/pj/omnia-contractsV2/contracts/interfaces/IDiamond.sol": {
       "lastModificationDate": 1683087553132,
