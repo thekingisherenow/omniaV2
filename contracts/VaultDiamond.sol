@@ -13,15 +13,17 @@ import {IDiamondCut} from "./interfaces/IDiamondCut.sol";
 import "./libraries/AppStorage.sol";
 import "hardhat/console.sol";
 import {LibMeta} from "./libraries/LibMeta.sol";
+import {DiamondInitializable} from "./utils/DiamondInitializable.sol";
 
-contract VaultDiamond {
-    AppStorage internal s;
+contract VaultDiamond is DiamondInitializable {
+    // AppStorage internal s;
 
     // these data should be saved in the diamondStorage.
     // bool private initialized;
 
     //=> further research on the contract owner is required..
     constructor(address _contractOwner, address _diamondCutFacet) payable {
+        s._initialized = 1;
         LibDiamond.setContractOwner(_contractOwner);
 
         // Add the diamondCut external function from the diamondCutFacet
@@ -34,22 +36,19 @@ contract VaultDiamond {
             functionSelectors: functionSelectors
         });
         LibDiamond.diamondCut(cut, address(0), "");
+
+        //when the constructor is run for the first time, we dont want people to able to call initializeClone() in the original contract..
+        _disableInitializers();
     }
 
     function initializeClone(
-        address _contractOwner,
         address[] memory facetAddresses,
         address initAddress
-    ) public {
-        console.log("s._nextId inside initializeClone", s._nextId);
-        s._nextId = 3;
-        console.log("s._nextId inside initializeClone", s._nextId);
-        LibDiamond.setContractOwner(_contractOwner);
-        //
-        address owner = LibDiamond.contractOwner();
+    ) public initializer {
+        LibDiamond.setContractOwner(msg.sender);
+
         console.log(
-            "owner of contract just before initial cut in clone",
-            owner
+            "msg.sender is set as owner and no owner is passed to initializeClone.. is this the best way ??"
         );
         // Add the diamondCut external function from the diamondCutFacet
         IDiamondCut.FacetCut[] memory cut = new IDiamondCut.FacetCut[](6);
@@ -86,13 +85,10 @@ contract VaultDiamond {
 
         //initialization to be done here..ie. DiamondInit is called..
         bytes memory data = abi.encodeWithSignature("init()");
-        console.log("before Cut !");
-        console.log("initAddress", initAddress);
         LibDiamond.diamondCut(cut, initAddress, data);
-        console.log("after cut !");
 
-        //change value of initialized to true to prevent it to run again.
-        // initialized = true;
+        // the initializer modifier itself changes the s._initializing to 1 .
+        // _disableInitializers();
     }
 
     // Find facet for function that is called and execute the

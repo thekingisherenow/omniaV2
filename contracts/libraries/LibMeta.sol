@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 import {ILoan} from "../interfaces/ILoan.sol";
 import {ISwap} from "../interfaces/ISwap.sol";
-import {IERC1155} from "../interfaces/IERC1155.sol";
+import "@solidstate/contracts/interfaces/IERC1155.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 import {IDiamondLoupe} from "../interfaces/IDiamondLoupe.sol";
 import {IOwnership} from "../interfaces/IOwnership.sol";

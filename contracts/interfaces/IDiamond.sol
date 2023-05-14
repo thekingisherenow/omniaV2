@@ -8,7 +8,6 @@ pragma solidity ^0.8.0;
 
 interface IDiamond {
     function initializeClone(
-        address _contractOwner,
         address[] memory facetAddresses,
         address initAddress
     ) external;

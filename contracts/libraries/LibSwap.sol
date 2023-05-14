@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 import "./AppStorage.sol";
 import {LibERC1155Internal} from "./LibERC1155Internal.sol";
 import {LibLoan} from "./LibLoan.sol";
-import {IERC20} from "../interfaces/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {IGMX} from "../interfaces/IGMX.sol";
 import "../interfaces/IOracle.sol";
 

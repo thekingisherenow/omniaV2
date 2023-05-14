@@ -48,29 +48,20 @@ contract VaultManager {
         if (validVault[_VAULT] == true) {
             vault = Clones.clone(VAULT);
             _VAULT_DETAILS.ORACLE_CONTRACT = ORACLE;
-
             console.log("msg.sender", msg.sender);
             console.log("admin", ADMIN);
-
             // -> the biggest problem is : setting owner of the contract.
             //since VaultManager contract calls the initializeDiamond function,which inturn calls diamondCut function, msg.sender in the vault contract is VaultManager contract.. and passing the original owner address into the diamondCut function brings complexity to the diamond contract.So VAULTMANAGER is set as the owner of the vault contract.
-            IDiamond(vault).initializeClone(
-                address(this),
-                facetAddresses,
-                initAddress
-            );
-
+            IDiamond(vault).initializeClone(facetAddresses, initAddress);
             // console.log("after cut !");
-
             IVault(vault).initialize(
                 _VAULT_DETAILS,
                 _WHITELISTED_ASSETS,
                 _WHITELISTED_DETAILS
             );
             vaults.push(address(vault));
-
             //we give the ownership to the deployer in the end.
-            IOwnership(vault).transferOwnership(msg.sender);
+            IOwnership(vault).transferOwnership(ADMIN);
             address changedOwner = IOwnership(vault).owner();
             console.log("changedOwner: ", changedOwner);
         }

@@ -76,4 +76,6 @@ struct AppStorage {
     uint256 totalSupply;
     //testing mapps
     address owner;
+    uint8 _initialized;
+    bool _initializing;
 }

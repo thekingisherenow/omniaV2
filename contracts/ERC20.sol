@@ -1,6 +1,7 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-import "./interfaces/IERC20.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @title Modification of standardard ERC20 deployment to be used in a competition where an address can mint once and only interact with our contracts
@@ -8,9 +9,9 @@ import "./interfaces/IERC20.sol";
  */
 
 contract ERC20 is IERC20 {
-    mapping (address => uint256) private _balances;
-    mapping (address => bool) private isMinted;
-    mapping (address => mapping (address => uint256)) private _allowed;
+    mapping(address => uint256) private _balances;
+    mapping(address => bool) private isMinted;
+    mapping(address => mapping(address => uint256)) private _allowed;
 
     address owner;
 
@@ -19,16 +20,15 @@ contract ERC20 is IERC20 {
     address[] private allowedContracts;
     uint256 at_once;
 
-    modifier onlyOwner {
+    modifier onlyOwner() {
         require(msg.sender == owner);
         _;
     }
 
-    constructor(address _owner, uint256 _at_once) public{
+    constructor(address _owner, uint256 _at_once) public {
         owner = _owner;
         at_once = _at_once;
     }
-
 
     /**
      * @dev Total number of tokens in existence.
@@ -36,7 +36,6 @@ contract ERC20 is IERC20 {
     function totalSupply() public view returns (uint256) {
         return _totalSupply;
     }
-
 
     /**
      * @dev Gets the balance of the specified address.
@@ -53,7 +52,10 @@ contract ERC20 is IERC20 {
      * @param spender address The address which will spend the funds.
      * @return A uint256 specifying the amount of tokens still available for the spender.
      */
-    function allowance(address owner, address spender) public view returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view returns (uint256) {
         return _allowed[owner][spender];
     }
 
@@ -89,7 +91,11 @@ contract ERC20 is IERC20 {
      * @param to address The address which you want to transfer to
      * @param value uint256 the amount of tokens to be transferred
      */
-    function transferFrom(address from, address to, uint256 value) public returns (bool) {
+    function transferFrom(
+        address from,
+        address to,
+        uint256 value
+    ) public returns (bool) {
         _transfer(from, to, value);
         _approve(from, msg.sender, _allowed[from][msg.sender] - value);
         return true;
@@ -105,8 +111,15 @@ contract ERC20 is IERC20 {
      * @param spender The address which will spend the funds.
      * @param addedValue The amount of tokens to increase the allowance by.
      */
-    function increaseAllowance(address spender, uint256 addedValue) public returns (bool) {
-        _approve(msg.sender, spender, _allowed[msg.sender][spender] + addedValue);
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) public returns (bool) {
+        _approve(
+            msg.sender,
+            spender,
+            _allowed[msg.sender][spender] + addedValue
+        );
         return true;
     }
 
@@ -120,8 +133,15 @@ contract ERC20 is IERC20 {
      * @param spender The address which will spend the funds.
      * @param subtractedValue The amount of tokens to decrease the allowance by.
      */
-    function decreaseAllowance(address spender, uint256 subtractedValue) public returns (bool) {
-        _approve(msg.sender, spender, _allowed[msg.sender][spender] - subtractedValue);
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) public returns (bool) {
+        _approve(
+            msg.sender,
+            spender,
+            _allowed[msg.sender][spender] - subtractedValue
+        );
         return true;
     }
 

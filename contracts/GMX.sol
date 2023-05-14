@@ -1,7 +1,7 @@
 pragma solidity ^0.8.0;
-import { IOracle } from "./interfaces/IOracle.sol";
-import { SafeMath } from "@openzeppelin/contracts/utils/math/SafeMath.sol";
-import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {IOracle} from "./interfaces/IOracle.sol";
+import {SafeMath} from "@openzeppelin/contracts/utils/math/SafeMath.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 /**
  * @dev Interface of the ERC20 standard as defined in the EIP.
@@ -9,7 +9,7 @@ import { IERC20 } from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract GMX {
     using SafeMath for uint256;
 
-    mapping (uint256 => Position) public positions;
+    mapping(uint256 => Position) public positions;
     address public ORACLE_CONTRACT;
 
     struct Position {
@@ -22,15 +22,22 @@ contract GMX {
         uint256 lastIncreasedTime;
     }
 
-    constructor(address _ORACLE_CONTRACT){
+    constructor(address _ORACLE_CONTRACT) {
         ORACLE_CONTRACT = _ORACLE_CONTRACT;
     }
 
-    function getDelta(address _indexToken, uint256 _size, uint256 _averagePrice, bool _isLong, uint256 _lastIncreasedTime) public view returns (bool, uint256) {
-        
+    function getDelta(
+        address _indexToken,
+        uint256 _size,
+        uint256 _averagePrice,
+        bool _isLong,
+        uint256 _lastIncreasedTime
+    ) public view returns (bool, uint256) {
         uint256 price = IOracle(ORACLE_CONTRACT).getPrice(_indexToken);
 
-        uint256 priceDelta = _averagePrice > price ? _averagePrice.sub(price) : price.sub(_averagePrice);
+        uint256 priceDelta = _averagePrice > price
+            ? _averagePrice.sub(price)
+            : price.sub(_averagePrice);
         uint256 delta = _size.mul(priceDelta).div(_averagePrice);
 
         bool hasProfit;
@@ -44,10 +51,19 @@ contract GMX {
         return (hasProfit, delta);
     }
 
-    function increasePosition(address _account, address _collateralToken, address _indexToken, uint256 _sizeDelta, bool _isLong) public {
-        
-
-        Position memory pos = getPosition(_account, _collateralToken, _indexToken, _isLong);
+    function increasePosition(
+        address _account,
+        address _collateralToken,
+        address _indexToken,
+        uint256 _sizeDelta,
+        bool _isLong
+    ) public {
+        Position memory pos = getPosition(
+            _account,
+            _collateralToken,
+            _indexToken,
+            _isLong
+        );
         uint256 price = IOracle(ORACLE_CONTRACT).getPrice(_indexToken);
 
         if (pos.size == 0) {
@@ -59,14 +75,39 @@ contract GMX {
         pos.size = pos.size.add(_sizeDelta);
         pos.collateral = pos.collateral.add(_sizeDelta.mul(price).div(1e18));
         pos.lastIncreasedTime = block.timestamp;
-        pos.averagePrice = pos.averagePrice.add(price.sub(pos.averagePrice).div(pos.size));
+        pos.averagePrice = pos.averagePrice.add(
+            price.sub(pos.averagePrice).div(pos.size)
+        );
 
-        positions[uint256(keccak256(abi.encodePacked(_account, _collateralToken, _indexToken, _isLong)))] = pos;
+        positions[
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        _account,
+                        _collateralToken,
+                        _indexToken,
+                        _isLong
+                    )
+                )
+            )
+        ] = pos;
     }
 
-    function decreasePosition(address _account, address _collateralToken, address _indexToken, uint256 _collateralDelta, uint256 _sizeDelta, bool _isLong, address _receiver) external returns (uint256) {
-        
-        Position memory pos = getPosition(_account, _collateralToken, _indexToken, _isLong);
+    function decreasePosition(
+        address _account,
+        address _collateralToken,
+        address _indexToken,
+        uint256 _collateralDelta,
+        uint256 _sizeDelta,
+        bool _isLong,
+        address _receiver
+    ) external returns (uint256) {
+        Position memory pos = getPosition(
+            _account,
+            _collateralToken,
+            _indexToken,
+            _isLong
+        );
         uint256 price = IOracle(ORACLE_CONTRACT).getPrice(_indexToken);
 
         if (pos.size == 0) {
@@ -80,21 +121,57 @@ contract GMX {
         pos.lastIncreasedTime = block.timestamp;
         pos.averagePrice = price; //its just a mock
 
-        positions[uint256(keccak256(abi.encodePacked(_account, _collateralToken, _indexToken, _isLong)))] = pos;
+        positions[
+            uint256(
+                keccak256(
+                    abi.encodePacked(
+                        _account,
+                        _collateralToken,
+                        _indexToken,
+                        _isLong
+                    )
+                )
+            )
+        ] = pos;
 
         //this should send profit to the user
-        (bool hasProfit, uint256 delta) = getDelta(_indexToken, _sizeDelta, pos.averagePrice, _isLong, pos.lastIncreasedTime);
-        
+        (bool hasProfit, uint256 delta) = getDelta(
+            _indexToken,
+            _sizeDelta,
+            pos.averagePrice,
+            _isLong,
+            pos.lastIncreasedTime
+        );
+
         uint256 sendAmount = _collateralDelta + _sizeDelta - delta;
 
-        if (hasProfit){
+        if (hasProfit) {
             sendAmount = sendAmount + delta + delta;
         }
 
-        IERC20(_collateralToken).transfer(_receiver, sendAmount);
+        bool success = IERC20(_collateralToken).transfer(_receiver, sendAmount);
+        require(success, "1");
+        //unchecked transfer occurs here.
     }
 
-    function getPosition(address _account, address _collateralToken, address _indexToken, bool _isLong) public view returns (Position memory _pos) {
-        return positions[uint256(keccak256(abi.encodePacked(_account, _collateralToken, _indexToken, _isLong)))];
+    function getPosition(
+        address _account,
+        address _collateralToken,
+        address _indexToken,
+        bool _isLong
+    ) public view returns (Position memory _pos) {
+        return
+            positions[
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            _account,
+                            _collateralToken,
+                            _indexToken,
+                            _isLong
+                        )
+                    )
+                )
+            ];
     }
 }

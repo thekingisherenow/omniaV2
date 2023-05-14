@@ -12,7 +12,7 @@ import {LibDiamond} from "../libraries/LibDiamond.sol";
 import {IDiamondLoupe} from "../interfaces/IDiamondLoupe.sol";
 import {IDiamondCut} from "../interfaces/IDiamondCut.sol";
 import {IERC173} from "../interfaces/IERC173.sol";
-import {IERC165} from "../interfaces/IERC165.sol";
+import {IERC165} from "@solidstate/contracts/interfaces/IERC165.sol";
 import {AppStorage} from "../libraries/AppStorage.sol";
 import "hardhat/console.sol";
 
@@ -32,8 +32,6 @@ contract DiamondInit {
         console.log("s._nextId Value after changing value ", s._nextId);
         console.log("-----------------");
 
-        console.log("init diamond bhitra chu !");
-        console.log("why isnt the value changinggggg..");
         // adding ERC165 data
         LibDiamond.DiamondStorage storage ds = LibDiamond.diamondStorage();
         ds.supportedInterfaces[type(IERC165).interfaceId] = true;

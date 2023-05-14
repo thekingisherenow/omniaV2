@@ -81,10 +81,13 @@ library LibLoan {
                             s.VAULT_DETAILS.GMX_CONTRACT,
                             collateralSize
                         );
-                        IERC20(s.MAIN_ASSET).transfer(
+                        bool success = IERC20(s.MAIN_ASSET).transfer(
                             s.VAULT_DETAILS.GMX_CONTRACT,
                             collateralSize
                         );
+                        require(success, "1");
+                        //unchecked transfer occurs here.
+
                         IGMX(s.VAULT_DETAILS.GMX_CONTRACT).increasePosition(
                             msg.sender,
                             s.MAIN_ASSET,
@@ -226,10 +229,13 @@ library LibLoan {
         // not enough balance or not approved
         require(success, "1");
 
-        IERC20(curr_loan.collateral).transfer(
+        bool success2 = IERC20(curr_loan.collateral).transfer(
             msg.sender,
             curr_loan.lockedAmount
         );
+        require(success2, "1");
+
+        //unchecked transfer oocurs here.
 
         delete s._loans[_loanId];
 

@@ -8,10 +8,10 @@ const {
 const { getGenericVaultParams } = require("../scripts/getVaultParams.js");
 const { deployDiamond } = require("../scripts/deploy.js");
 const { pairs } = require("../helper-hardhat-config.js");
-const { assert } = require("chai");
+const { assert, expect } = require("chai");
 const { ethers, getNamedAccounts } = require("hardhat");
 
-describe("Simple VaultDiamond Tests.", async function () {
+describe("Original Diamond Tests", async function () {
   let diamondAddress;
   let diamondCutFacet;
   let diamondLoupeFacet;
@@ -21,12 +21,16 @@ describe("Simple VaultDiamond Tests.", async function () {
   let receipt;
   let result;
   let deployer;
+  let player;
   const addresses = [];
   let or, vm, gmx;
   let loanFacet, swapFacet;
 
   before(async function () {
     console.log("yo");
+    const accounts = await ethers.getSigners();
+    player = accounts[1];
+    // console.log("player", player);
     await deployments.fixture(["local"]);
 
     console.log("The pairs addresses are: " + (await pairs.WBTC.address));
@@ -67,6 +71,7 @@ describe("Simple VaultDiamond Tests.", async function () {
     console.log("GMX Contract Deployed at " + gmx.address);
   });
 
+  //=> test starts from her
   it("should have three facets -- call to facetAddresses function", async () => {
     for (const address of await diamondLoupeFacet.facetAddresses()) {
       addresses.push(address);
@@ -90,6 +95,7 @@ describe("Simple VaultDiamond Tests.", async function () {
     result = await diamondLoupeFacet.facetFunctionSelectors(addresses[2]);
     assert.sameMembers(result, selectors);
   });
+
   it("should add Loan Facet", async () => {
     const LoanFacet = await ethers.getContractFactory("LoanFacet");
     loanFacet = await LoanFacet.deploy();
@@ -144,27 +150,6 @@ describe("Simple VaultDiamond Tests.", async function () {
     assert.sameMembers(result, selectors);
   });
 
-  it("minting and checking balance in both facet is same.", async () => {
-    const loanFacet = await ethers.getContractAt("LoanFacet", diamondAddress);
-    const swapFacet = await ethers.getContractAt("SwapFacet", diamondAddress);
-    response = await loanFacet.getMyBalance();
-    // asset that the balance before minting is 0.
-    assert.equal(response.toString(), 0);
-    response = await swapFacet.mintSwap("100");
-    console.log("Minting 100 in swapFacet");
-    await response.wait(1);
-    // lets mint in roughfacet2
-    response = await loanFacet.mint("500");
-    console.log("Minting 500 in loanFacet");
-    await response.wait(1);
-    //mint garisake pachi ko value
-    response = await loanFacet.getMyBalance();
-    console.log("mint garisake pachiko balance", await response.toString());
-    assert.equal(response.toString(), "600");
-    //assert that the total balance is 600.
-    response = await swapFacet.getMyBalanceSwap();
-    assert.equal(response.toString(), "600");
-  });
   it("lets check if the value of _nextId has been changed to 1 or not.", async () => {
     const loanFacet = await ethers.getContractAt("LoanFacet", diamondAddress);
     response = await loanFacet.getNextId();
@@ -205,5 +190,21 @@ describe("Simple VaultDiamond Tests.", async function () {
       erc1155Facet.address
     );
     assert.sameMembers(result, erc1155Selectors);
+  });
+
+  it("initializeClone shouldn't run in the original contract.", async () => {
+    const vault = await ethers.getContractAt("VaultDiamond", diamondAddress);
+    // console.log("vault", vault);
+    //need to send facets along.
+    console.log("loanFacet", loanFacet.address);
+    console.log("swapfacet", swapFacet.address);
+    console.log("diamondInit", diamondInitAddress);
+    // response = await
+    await expect(
+      vault.initializeClone(
+        [loanFacet.address, swapFacet.address],
+        diamondInitAddress
+      )
+    ).to.be.revertedWith("Initializable: contract is already initialized");
   });
 });
